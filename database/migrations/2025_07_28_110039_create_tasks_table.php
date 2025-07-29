@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->index()
                 ->constrained()
                 ->onDelete('cascade');
-            $table->string('title', 100)->unique();
+            $table->string('title', 100);
             $table->text('content');
             $table->enum('status', TaskStatus::values())
                 ->default(TaskStatus::TODO->value)

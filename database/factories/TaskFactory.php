@@ -41,7 +41,7 @@ class TaskFactory extends Factory
             $subtasks[] = [
                 'id' => fake()->uuid(),
                 'title' => fake()->sentence(2),
-                'completed' => fake()->boolean(60), // 60% chance of being completed
+                'completed' => true,
                 'created_at' => fake()->dateTimeBetween('-1 month')->format('Y-m-d H:i:s'),
             ];
         }

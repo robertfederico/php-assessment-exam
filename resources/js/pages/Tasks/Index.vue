@@ -1,65 +1,27 @@
 <script setup lang="ts">
+import { Head, Link, router } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
+import { debounce } from 'lodash';
+// global component
+import AppLayout from '@/layouts/AppLayout.vue';
+// shadcn components
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/vue3';
-import { debounce } from 'lodash';
 import { CheckCircle, Circle, Clock, Edit, Eye, FileText, MoreHorizontal, Plus, Search, Trash2 } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
-import { Progress } from '@/components/ui/progress'
-
-// Types
-interface TaskStatus {
-    value: string;
-    label: string;
-}
-
-interface Task {
-    id: number;
-    title: string;
-    content: string;
-    status: TaskStatus;
-    is_published: boolean;
-    subtasks_progress: number;
-    total_subtasks_count: number;
-    completed_subtasks_count: number;
-    has_subtasks: boolean;
-    created_at: string;
-    updated_at: string;
-}
-
-interface TaskCollection {
-    data: Task[];
-    meta: {
-        current_page: number;
-        last_page: number;
-        per_page: number;
-        total: number;
-        from: number;
-        to: number;
-    };
-    links: {
-        first: string;
-        last: string;
-        prev: string | null;
-        next: string | null;
-    };
-}
-
-interface StatusOption {
-    value: string;
-    label: string;
-}
+// types and interfaces
+import { type BreadcrumbItem } from '@/types';
+import { PaginatedResponse } from '@/interfaces/global-interfaces';
+import { StatusOption, Task } from '@/interfaces/task-intefaces';
 
 interface Props {
-    tasks: TaskCollection;
+    tasks: PaginatedResponse<Task>;
     filters: {
         search?: string;
         status?: string;
@@ -93,7 +55,6 @@ const hasFilters = computed(() => {
 });
 
 const publishedOptions = [
-    { value: 'all', label: 'All Taskss' },
     { value: 'true', label: 'Published' },
     { value: 'false', label: 'Drafts' },
 ];
@@ -179,7 +140,7 @@ const handleStatusChange = (value: string) => {
     updateFilters();
 };
 
-const handlePublishedChange = (value: string) => {
+const handlePublishedChange = (value: string) : any => {
     selectedPublished.value = value;
     updateFilters();
 };
@@ -290,7 +251,6 @@ const handleDelete = (task: Task) => {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectItem value="''">All Statuses</SelectItem>
                                         <SelectItem v-for="option in statusOptions" :key="option.value" :value="option.value">
                                             {{ option.label }}
                                         </SelectItem>
@@ -300,7 +260,7 @@ const handleDelete = (task: Task) => {
                             <!-- Published Filter -->
                             <Select :model-value="selectedPublished" @update:model-value="handlePublishedChange">
                                 <SelectTrigger>
-                                    <SelectValue placeholder="All Tasks" value="all" />
+                                    <SelectValue placeholder="All Tasks" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem v-for="option in publishedOptions" :key="option.value" :value="option.value">
@@ -421,6 +381,7 @@ const handleDelete = (task: Task) => {
                                                         Edit
                                                     </DropdownMenuItem>
                                                 </Link>
+
                                                 <DropdownMenuSeparator />
 
                                                 <!-- Status submenu -->
@@ -433,6 +394,7 @@ const handleDelete = (task: Task) => {
                                                     <component :is="getStatusIcon(status.value)" class="mr-2 h-4 w-4" />
                                                     {{ status.label }}
                                                 </DropdownMenuItem>
+                                            
 
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem @click="handleTogglePublished(task)">
@@ -491,7 +453,7 @@ const handleDelete = (task: Task) => {
 
                         <!-- Per Page -->
                         <div class="flex items-center gap-2">
-                            <Label class="text-sm text-muted-foreground">Per page</Label>
+                            <label class="text-sm text-muted-foreground">Per page</label>
                             <Select :model-value="perPage.toString()" @update:model-value="handlePerPageChange">
                                 <SelectTrigger>
                                     <SelectValue />

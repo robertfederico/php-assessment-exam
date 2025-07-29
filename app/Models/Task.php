@@ -177,12 +177,4 @@ class Task extends Model
     {
         return $query->orderBy('created_at', $direction);
     }
-
-    /**
-     * Scope to limit tasks to current user.
-     */
-    public function scopeForUser(Builder $query, int $userId): Builder
-    {
-        return $query->where('user_id', $userId);
-    }
 }

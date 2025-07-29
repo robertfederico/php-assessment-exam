@@ -1,19 +1,14 @@
 <script setup lang="ts">
+import { v4 as uuidv4 } from 'uuid';
+import { computed, ref, watch } from 'vue';
+// shadcn components
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { CheckCircle2, GripVertical, Plus, Trash2 } from 'lucide-vue-next';
-import { v4 as uuidv4 } from 'uuid';
-import { computed, ref, watch } from 'vue';
-
-// Types
-interface Subtask {
-    id: string;
-    title: string;
-    completed: boolean;
-    created_at?: string;
-}
+import { CheckCircle2, Plus, Trash2 } from 'lucide-vue-next';
+// interface
+import { Subtask } from '@/interfaces/task-intefaces';
 
 interface Props {
     subtasks: Subtask[];
@@ -59,8 +54,6 @@ const addSubtask = () => {
 
     localSubtasks.value.push(newSubtask);
     emitUpdate();
-
-    // Focus on the new input after DOM update
     setTimeout(() => {
         const inputs = document.querySelectorAll('[data-subtask-input]');
         const lastInput = inputs[inputs.length - 1] as HTMLInputElement;
@@ -77,20 +70,9 @@ const removeSubtask = (index: number) => {
 };
 
 // Toggle subtask completion
-const toggleSubtaskCompleted = (index: number, completed: boolean) : void => {
+const toggleSubtaskCompleted = (index: number, completed: boolean): void => {
     localSubtasks.value[index].completed = completed;
     emitUpdate();
-};
-
-// Move subtask up/down
-const moveSubtask = (index: number, direction: 'up' | 'down') => {
-    const newIndex = direction === 'up' ? index - 1 : index + 1;
-
-    if (newIndex >= 0 && newIndex < localSubtasks.value.length) {
-        const item = localSubtasks.value.splice(index, 1)[0];
-        localSubtasks.value.splice(newIndex, 0, item);
-        emitUpdate();
-    }
 };
 </script>
 
@@ -109,32 +91,16 @@ const moveSubtask = (index: number, direction: 'up' | 'down') => {
         </div>
 
         <!-- Subtasks List -->
-        <div v-if="hasSubtasks" class="space-y-3">
-            <Card v-for="(subtask, index) in localSubtasks" :key="subtask.id" class="relative">
-                <CardContent class="p-4">
+        <div v-if="hasSubtasks" class="space-y-2">
+            <Card v-for="(subtask, index) in localSubtasks" :key="subtask.id" class="relative p-3">
+                <CardContent>
                     <div class="flex items-center gap-3">
-                        <!-- Drag Handle -->
-                        <div class="flex flex-col gap-1">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                class="h-4 w-4 cursor-pointer p-0"
-                                @click="moveSubtask(index, 'up')"
-                                :disabled="index === 0"
-                                title="Move up"
-                            >
-                                <GripVertical class="h-3 w-3" />
-                            </Button>
-                        </div>
-
                         <!-- Completion Checkbox -->
                         <Checkbox
                             :id="`subtask-${subtask.id}`"
                             :model-value="subtask.completed"
                             @update:model-value="(checked: any) => toggleSubtaskCompleted(index, checked as boolean)"
                         />
-
                         <!-- Title Input -->
                         <div class="flex-1">
                             <Input
@@ -146,7 +112,7 @@ const moveSubtask = (index: number, direction: 'up' | 'down') => {
                                     'text-muted-foreground line-through': subtask.completed,
                                     'border-destructive': errors && errors[index] && errors[index].title,
                                 }"
-                                maxlength="255"
+                                maxlength="50"
                             />
                             <span v-if="errors && errors[index] && errors[index].title" class="mt-1 block text-xs text-destructive">
                                 {{ errors[index].title }}

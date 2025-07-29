@@ -12,13 +12,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
-    // Task Management Routes
+    // Task Routes
     Route::prefix('/tasks')
         ->name('tasks.')
         ->controller(TaskController::class)
         ->middleware([EnsureTaskOwnership::class])
         ->group(function () {
-            // Main CRUD routes
             Route::get('/', 'index')->name('index');
             Route::get('/create', 'create')->name('create');
             Route::post('/', 'store')->name('store');
@@ -29,13 +28,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             // Task status and publishing routes
             Route::patch('/{task}/status', 'updateStatus')->name('update-status');
             Route::patch('/{task}/toggle-published', 'togglePublished')->name('toggle-published');
-            // Subtask management routes
-            Route::patch('/{task}/subtasks', 'updateSubtasks')->name('update-subtasks');
-            Route::patch('/{task}/subtask/toggle', 'toggleSubtask')->name('toggle-subtask');
-            // Trash management routes
-            Route::get('/trash/list', 'trash')->name('trash');
-            Route::patch('/{task}/restore', 'restore')->name('restore')->withTrashed();
-            Route::delete('/{task}/force-delete', 'forceDelete')->name('force-delete')->withTrashed();
         });
 });
 

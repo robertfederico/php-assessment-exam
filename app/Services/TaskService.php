@@ -16,13 +16,12 @@ class TaskService
      * Get paginated tasks for a user with optional filters.
      */
     public function getAllForUser(
-        int $userId,
         array $filters = [],
         int $perPage = 10,
         string $orderBy = 'created_at',
         string $orderDirection = 'desc'
     ): AnonymousResourceCollection {
-        $query = Task::forUser($userId);
+        $query = auth()->user()->tasks();
 
         // Apply filters
         if (! empty($filters['search'])) {
@@ -53,17 +52,39 @@ class TaskService
     /**
      * Create a new task and return resource.
      */
-    public function create(int $userId, array $data): TaskResource
+    public function create(array $data): TaskResource
     {
         if (! empty($data['image'])) {
             $data['image_path'] = $this->handleImageUpload($data['image']);
             unset($data['image']);
         }
 
-        $data['user_id'] = $userId;
-        $task = Task::create($data);
+        $data = $this->checkForCompletedSubTasks($data);
+        $task = auth()->user()
+            ->tasks()
+            ->create($data);
 
         return TaskResource::make($task);
+    }
+
+    /**
+     * Check if subtasks are completed, set task status to done if true
+     * @param array $data
+     * @return array
+     */
+    private function checkForCompletedSubTasks(array $data) : array
+    {
+        if(empty($data['subtasks'])) {
+            return $data;
+        }
+
+        $incompleteSubTasks = collect($data['subtasks'])->where('completed', false)->count();
+
+        if ($incompleteSubTasks === 0) {
+            $data['status'] = TaskStatus::DONE;
+        }
+
+        return $data;
     }
 
     /**
@@ -111,90 +132,6 @@ class TaskService
         $task->update(['is_published' => ! $task->is_published]);
 
         return TaskResource::make($task->fresh());
-    }
-
-    /**
-     * Add or update subtasks.
-     *
-     * @return TaskResource;
-     */
-    public function updateSubtasks(Task $task, array $subtasks): TaskResource
-    {
-        $formattedSubtasks = collect($subtasks)->map(function ($subtask) {
-            return [
-                'id' => $subtask['id'] ?? Str::uuid(),
-                'title' => $subtask['title'],
-                'completed' => $subtask['completed'] ?? false,
-                'created_at' => $subtask['created_at'] ?? now()->toDateTimeString(),
-            ];
-        })->toArray();
-
-        $task->update(['subtasks' => $formattedSubtasks]);
-
-        return TaskResource::make($task->fresh());
-    }
-
-    /**
-     * Mark subtask as completed/incomplete and return resource.
-     */
-    public function toggleSubtask(Task $task, string $subtaskId): TaskResource
-    {
-        $subtasks = collect($task->subtasks);
-
-        $updatedSubtasks = $subtasks->map(function ($subtask) use ($subtaskId) {
-            if ($subtask['id'] === $subtaskId) {
-                $subtask['completed'] = ! $subtask['completed'];
-            }
-
-            return $subtask;
-        })->toArray();
-
-        $task->update(['subtasks' => $updatedSubtasks]);
-
-        return TaskResource::make($task->fresh());
-    }
-
-    /**
-     * Get trashed tasks for a user.
-     */
-    public function getTrashedForUser(int $userId, int $perPage = 10): TaskResource
-    {
-        $tasks = Task::forUser($userId)
-            ->onlyTrashed()
-            ->orderByDate()
-            ->paginate($perPage);
-
-        return TaskResource::make($tasks);
-    }
-
-    /**
-     * Restore a trashed task and return resource.
-     */
-    public function restore(int $taskId, int $userId): ?TaskResource
-    {
-        $task = Task::forUser($userId)->onlyTrashed()->find($taskId);
-
-        if ($task) {
-            $task->restore();
-
-            return TaskResource::make($task->fresh());
-        }
-
-        return null;
-    }
-
-    /**
-     * Permanently delete a task.
-     */
-    public function forceDelete(int $taskId, int $userId): bool
-    {
-        $task = Task::forUser($userId)->onlyTrashed()->find($taskId);
-
-        if ($task) {
-            return $task->forceDelete();
-        }
-
-        return false;
     }
 
     /**

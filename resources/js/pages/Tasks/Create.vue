@@ -14,24 +14,13 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { AlertCircle, ArrowLeft, FileText, Image as ImageIcon, Save, Upload, X } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
-// Types
-interface StatusOption {
-    value: string;
-    label: string;
-}
-
-interface Subtask {
-    id: string;
-    title: string;
-    completed: boolean;
-    created_at?: string;
-}
+import { StatusOption, Subtask } from '@/interfaces/task-intefaces';
 
 interface Props {
     statusOptions: StatusOption[];
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 // Form data
 const form = useForm({
@@ -40,7 +29,7 @@ const form = useForm({
     status: 'to-do',
     is_published: true,
     image: null as File | null,
-    subtasks: [] as Subtask[],
+    subtasks: [],
 });
 
 // Reactive refs
@@ -61,7 +50,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 // Computed properties
 const hasImage = computed(() => form.image !== null);
-const hasSubtasks = computed(() => form.subtasks.length > 0);
+const hasSubtasks = computed(() => form.subtasks?.length > 0);
 
 // Image handling
 const handleImageSelect = (event: Event) => {
@@ -113,9 +102,7 @@ const handleSubtasksUpdate = (subtasks: Subtask[]) => {
 const submitForm = () => {
     form.post('/tasks', {
         preserveScroll: true,
-        onSuccess: () => {
-            // Form will redirect to index on success
-        },
+        onSuccess: () => {},
         onError: (errors) => {
             console.error('Validation errors:', errors);
         },
@@ -136,8 +123,8 @@ const handleStatusChange = (value: string) => {
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold tracking-tight">Create Task</h1>
-                    <p class="text-muted-foreground">Add a new task to your list</p>
+                    <h1 class="text-2xl font-bold tracking-tight">Create Task</h1>
+                    <p class="text-sm text-muted-foreground">Add a new task to your list</p>
                 </div>
                 <!-- Submit Actions -->
                 <div class="flex items-center justify-end gap-4">
@@ -148,7 +135,7 @@ const handleStatusChange = (value: string) => {
                         </Button>
                     </Link>
                     <Button type="button" @click="submitForm" :disabled="form.processing" class="cursor-pointer">
-                        <Save class="mr-2 h-4 w-4" />
+                        <Save class="h-4 w-4" />
                         {{ form.processing ? 'Creating...' : 'Create Task' }}
                     </Button>
                 </div>
@@ -156,6 +143,12 @@ const handleStatusChange = (value: string) => {
 
             <!-- Form -->
             <form @submit.prevent="submitForm" class="space-y-6">
+                <!-- Global Errors -->
+                <Alert v-if="Object.keys(form.errors).length > 0" variant="destructive">
+                    <AlertCircle class="h-4 w-4" />
+                    <AlertDescription> Please fix the validation errors below before submitting. </AlertDescription>
+                </Alert>
+
                 <div class="grid gap-6 lg:grid-cols-3">
                     <!-- Main Content -->
                     <div class="space-y-6 lg:col-span-2">
@@ -227,7 +220,6 @@ const handleStatusChange = (value: string) => {
                         <Card>
                             <CardHeader>
                                 <CardTitle>Subtasks (Optional)</CardTitle>
-                                <p class="text-sm text-muted-foreground">Break down your task into smaller, manageable subtasks.</p>
                             </CardHeader>
                             <CardContent>
                                 <SubtaskRepeater :subtasks="form.subtasks" @update:subtasks="handleSubtasksUpdate" :errors="form.errors.subtasks" />
@@ -237,7 +229,7 @@ const handleStatusChange = (value: string) => {
 
                     <!-- Sidebar -->
                     <div class="space-y-6">
-                        <!-- Publication Settings -->
+                        <!-- Publication -->
                         <Card>
                             <CardHeader>
                                 <CardTitle>Publication</CardTitle>
@@ -330,12 +322,6 @@ const handleStatusChange = (value: string) => {
                         </Card>
                     </div>
                 </div>
-
-                <!-- Global Errors -->
-                <Alert v-if="Object.keys(form.errors).length > 0" variant="destructive">
-                    <AlertCircle class="h-4 w-4" />
-                    <AlertDescription> Please fix the validation errors above before submitting. </AlertDescription>
-                </Alert>
             </form>
         </div>
     </AppLayout>
