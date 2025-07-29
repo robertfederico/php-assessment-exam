@@ -26,7 +26,7 @@ class TaskFilterRequest extends FormRequest
         return [
             'search' => 'nullable|string|max:255',
             'status' => ['nullable', Rule::in(TaskStatus::values())],
-            'is_published' => 'nullable|boolean',
+            'is_published' => 'nullable|string',
             'per_page' => 'nullable|integer|min:1|max:100',
             'order_by' => 'nullable|in:created_at,title,updated_at',
             'order_direction' => 'nullable|in:asc,desc',
