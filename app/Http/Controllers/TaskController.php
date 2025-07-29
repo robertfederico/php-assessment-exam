@@ -63,7 +63,7 @@ class TaskController extends Controller
      */
     public function store(TaskRequest $request): RedirectResponse
     {
-        $this->taskService->create( $request->validated());
+        $this->taskService->create($request->validated());
 
         return to_route('tasks.index')
             ->with('success', 'Task created successfully');

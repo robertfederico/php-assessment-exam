@@ -69,12 +69,10 @@ class TaskService
 
     /**
      * Check if subtasks are completed, set task status to done if true
-     * @param array $data
-     * @return array
      */
-    private function checkForCompletedSubTasks(array $data) : array
+    private function checkForCompletedSubTasks(array $data): array
     {
-        if(empty($data['subtasks'])) {
+        if (empty($data['subtasks'])) {
             return $data;
         }
 
