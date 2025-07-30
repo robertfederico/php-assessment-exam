@@ -2,6 +2,8 @@
 
 A simple task management application built with Laravel and Vue.js.
 
+## Demo URL: https://powderblue-bear-757602.hostingersite.com/login
+
 ## Tech Stack
 
 - **Backend**: Laravel 12+, PHP 8.2+
