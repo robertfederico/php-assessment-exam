@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
-import { computed, ref, watch } from 'vue';
 import { debounce } from 'lodash';
+import { computed, ref, watch } from 'vue';
 // global component
 import AppLayout from '@/layouts/AppLayout.vue';
 // shadcn components
@@ -16,9 +16,9 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CheckCircle, Circle, Clock, Edit, Eye, FileText, MoreHorizontal, Plus, Search, Trash2 } from 'lucide-vue-next';
 // types and interfaces
-import { type BreadcrumbItem } from '@/types';
 import { PaginatedResponse } from '@/interfaces/global-interfaces';
 import { StatusOption, Task } from '@/interfaces/task-intefaces';
+import { type BreadcrumbItem } from '@/types';
 
 interface Props {
     tasks: PaginatedResponse<Task>;
@@ -140,7 +140,7 @@ const handleStatusChange = (value: string) => {
     updateFilters();
 };
 
-const handlePublishedChange = (value: string) : any => {
+const handlePublishedChange = (value: string): any => {
     selectedPublished.value = value;
     updateFilters();
 };
@@ -394,7 +394,6 @@ const handleDelete = (task: Task) => {
                                                     <component :is="getStatusIcon(status.value)" class="mr-2 h-4 w-4" />
                                                     {{ status.label }}
                                                 </DropdownMenuItem>
-                                            
 
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem @click="handleTogglePublished(task)">
@@ -471,12 +470,3 @@ const handleDelete = (task: Task) => {
         </div>
     </AppLayout>
 </template>
-
-<style scoped>
-.line-clamp-1 {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-</style>

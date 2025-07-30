@@ -21,6 +21,7 @@ class TaskService
         string $orderBy = 'created_at',
         string $orderDirection = 'desc'
     ): AnonymousResourceCollection {
+
         $query = auth()->user()->tasks();
 
         // Apply filters

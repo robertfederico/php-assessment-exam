@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
-
 import SubtaskRepeater from '@/components/tasks/SubtaskRepeater.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 // shadcn components
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -337,9 +336,3 @@ const handleStatusChange = (value: string) => {
         </div>
     </AppLayout>
 </template>
-
-<style scoped>
-.line-through {
-    text-decoration: line-through;
-}
-</style>

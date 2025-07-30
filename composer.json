@@ -22,7 +22,6 @@
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "nunomaduro/larastan": "^3.6",
         "pestphp/pest": "^3.8",
         "pestphp/pest-plugin-laravel": "^3.2"
     },
@@ -67,15 +66,9 @@
             "@php artisan config:clear --ansi",
             "@php artisan test"
         ],
-        "phpstan": [
-            "./vendor/bin/phpstan analyse"
-        ],
         "pint": [
             "./vendor/bin/pint"
         ]
-    },
-    "scripts-descriptions": {
-        "phpstan": "Run PHPStan static analysis against your application."
     },
     "extra": {
         "laravel": {

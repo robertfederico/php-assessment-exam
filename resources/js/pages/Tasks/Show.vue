@@ -1,46 +1,20 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import AppLayout from '@/layouts/AppLayout.vue';
+// shadcn components
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ArrowLeft, Calendar, CheckCircle, Circle, Clock, Edit, Eye, EyeOff, FileText, Image as ImageIcon, Trash2 } from 'lucide-vue-next';
-import { computed } from 'vue';
-
-// Types
-interface TaskStatus {
-    value: string;
-    label: string;
-}
-
-interface Subtask {
-    id: string;
-    title: string;
-    completed: boolean;
-    created_at?: string;
-}
-
-interface Task {
-    id: number;
-    title: string;
-    content: string;
-    status: TaskStatus;
-    is_published: boolean;
-    image_url: string | null;
-    image_path: string | null;
-    subtasks: Subtask[] | null;
-    subtasks_progress: number;
-    total_subtasks_count: number;
-    completed_subtasks_count: number;
-    has_subtasks: boolean;
-    all_subtasks_completed: boolean;
-    created_at: string;
-    updated_at: string;
-}
+// types and interface
+import { type BreadcrumbItem } from '@/types';
+import { Task } from '@/interfaces/task-intefaces';
+// utils
+import { formatDate, formatDateShort } from '@/utils/date-utils';
 
 interface Props {
     task: Task;
@@ -89,25 +63,6 @@ const getStatusIcon = (status: string) => {
         default:
             return Circle;
     }
-};
-
-// Format date
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
-
-const formatDateShort = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    });
 };
 
 // Handle actions

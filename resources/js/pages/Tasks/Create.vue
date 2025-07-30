@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import SubtaskRepeater from '@/components/tasks/SubtaskRepeater.vue';
+// shadcn components
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,12 +11,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { AlertCircle, ArrowLeft, FileText, Image as ImageIcon, Save, Upload, X } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
-
+// interface
 import { StatusOption, Subtask } from '@/interfaces/task-intefaces';
 
 interface Props {

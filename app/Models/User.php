@@ -47,9 +47,6 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get the user that owns the task.
-     */
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
